@@ -5,11 +5,13 @@ services:
     container_name: mysql-db
     environment:
       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_DATABASE: default_db
+      MYSQL_ROOT_PASSWORD: ""  # Root sans mot de passe
     ports:
       - "3307:3306"
     networks:
       - microservice-network
+    volumes:
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql  # Script d'initialisation SQL
 
   rabbitmq:
     image: rabbitmq:management
@@ -21,7 +23,7 @@ services:
       - microservice-network
 
   client-service:
-    image: chtaybo22/ms-client:latest  # Utilise l'image Docker Hub
+    image: chtaybo22/ms-client:latest
     container_name: client-service
     depends_on:
       - rabbitmq
@@ -34,11 +36,13 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
       - DB_HOST=mysql-db
-      - DB_NAME=client_db
+      - DB_NAME=client_db  # Base de données pour client-service
+      - DB_USER=root
+      - DB_PASSWORD=
     command: ["python", "-m", "API.client_api"]
 
   produit-service:
-    image: chtaybo22/ms-produit:latest  # Utilise l'image Docker Hub
+    image: chtaybo22/ms-produit:latest
     container_name: produit-service
     depends_on:
       - rabbitmq
@@ -51,11 +55,13 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
       - DB_HOST=mysql-db
-      - DB_NAME=produit_db
+      - DB_NAME=produit_db  # Base de données pour produit-service
+      - DB_USER=root
+      - DB_PASSWORD=
     command: ["python", "-m", "API.produit_api"]
 
   commande-service:
-    image: chtaybo22/ms-commande:latest  # Utilise l'image Docker Hub
+    image: chtaybo22/ms-commande:latest
     container_name: commande-service
     depends_on:
       - rabbitmq
@@ -68,7 +74,9 @@ services:
       - RABBITMQ_HOST=rabbitmq
       - RABBITMQ_PORT=5672
       - DB_HOST=mysql-db
-      - DB_NAME=commande_db
+      - DB_NAME=commande_db  # Base de données pour commande-service
+      - DB_USER=root
+      - DB_PASSWORD=
     command: ["python", "-m", "API.commande_api"]
 
 networks:
