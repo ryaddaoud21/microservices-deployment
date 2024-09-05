@@ -1,18 +1,14 @@
 version: '3'
 services:
   mysql:
-    image: mysql:5.7
-    container_name: mysql-db
-    environment:
-      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
-      MYSQL_ROOT_PASSWORD: ""  # Root sans mot de passe
-    ports:
-      - "3307:3306"
-    networks:
-      - microservice-network
-    volumes:
-      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql  # Script d'initialisation SQL
-
+      image: chtaybo22/mysql-custom:latest
+      container_name: mysql-db  # Définir le nom du conteneur comme 'mysql-db'
+      ports:
+        - "3307:3306"  # Utilisez le port 3307 sur l'hôte et mappez-le au port 3306 dans le conteneur
+      environment:
+        MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+      networks:
+        - microservice-network
 
   rabbitmq:
     image: rabbitmq:management
