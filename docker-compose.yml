@@ -1,0 +1,76 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: mysql-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+      MYSQL_DATABASE: default_db
+    ports:
+      - "3307:3306"
+    networks:
+      - microservice-network
+
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - microservice-network
+
+  client-service:
+    image: chtaybo22/ms-client:latest  # Utilise l'image Docker Hub
+    container_name: client-service
+    depends_on:
+      - rabbitmq
+      - mysql
+    networks:
+      - microservice-network
+    ports:
+      - "5001:5001"
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - DB_HOST=mysql-db
+      - DB_NAME=client_db
+    command: ["python", "-m", "API.client_api"]
+
+  produit-service:
+    image: chtaybo22/ms-produit:latest  # Utilise l'image Docker Hub
+    container_name: produit-service
+    depends_on:
+      - rabbitmq
+      - mysql
+    networks:
+      - microservice-network
+    ports:
+      - "5002:5002"
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - DB_HOST=mysql-db
+      - DB_NAME=produit_db
+    command: ["python", "-m", "API.produit_api"]
+
+  commande-service:
+    image: chtaybo22/ms-commande:latest  # Utilise l'image Docker Hub
+    container_name: commande-service
+    depends_on:
+      - rabbitmq
+      - mysql
+    networks:
+      - microservice-network
+    ports:
+      - "5003:5003"
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - DB_HOST=mysql-db
+      - DB_NAME=commande_db
+    command: ["python", "-m", "API.commande_api"]
+
+networks:
+  microservice-network:
+    driver: bridge
