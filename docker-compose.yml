@@ -36,7 +36,8 @@ services:
       - DB_NAME=client_db  # Base de données pour client-service
       - DB_USER=root
       - DB_PASSWORD=
-    command: ["python", "-m", "API.client_api"]
+    #command: ["python", "-m", "API.client_api"]
+    command: ["python", "-m", "client_api"]
 
   produit-service:
     image: chtaybo22/ms-produit:latest
@@ -55,7 +56,7 @@ services:
       - DB_NAME=produit_db  # Base de données pour produit-service
       - DB_USER=root
       - DB_PASSWORD=
-    command: ["python", "-m", "API.produit_api"]
+    command: ["python", "-m", "produit_api"]
 
   commande-service:
     image: chtaybo22/ms-commande:latest
@@ -74,7 +75,9 @@ services:
       - DB_NAME=commande_db  # Base de données pour commande-service
       - DB_USER=root
       - DB_PASSWORD=
-    command: ["python", "-m", "API.commande_api"]
+    command: ["python", "-m", "commande_api"]
+
+
 
 networks:
   microservice-network:
