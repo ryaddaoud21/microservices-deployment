@@ -2,14 +2,18 @@ global:
   scrape_interval: 15s  # Fréquence de collecte des métriques
 
 scrape_configs:
+
   - job_name: 'ms-produit'
+    metrics_path: /metrics
     static_configs:
-      - targets: ['ms-produit:8000']  # Le port où Prometheus récupère les métriques
+      - targets: ['produit-service:5002']  # Port exposé par produit-service pour les métriques
 
   - job_name: 'ms-client'
+    metrics_path: /metrics
     static_configs:
-      - targets: ['ms-client:8000']  # Endpoint de métriques du service client
+      - targets: ['client-service:5001']  # Correction du nom et du port pour le service client
 
   - job_name: 'ms-commande'
+    metrics_path: /metrics
     static_configs:
-      - targets: ['ms-commande:8000']  # Endpoint de métriques du service commande
+      - targets: ['commande-service:5003']  # Correction du nom et du port pour le service commande
