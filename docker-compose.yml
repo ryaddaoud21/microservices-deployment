@@ -12,9 +12,9 @@ services:
 
   mysql:
       image: chtaybo22/mysql-custom:latest
-      container_name: mysql-db  # Définir le nom du conteneur comme 'mysql-db'
+      container_name: mysql-db
       ports:
-        - "3307:3306"  # Utilisez le port 3307 sur l'hôte et mappez-le au port 3306 dans le conteneur
+        - "3307:3306"
       environment:
         MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
       networks:

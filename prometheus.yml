@@ -6,14 +6,13 @@ scrape_configs:
   - job_name: 'ms-produit'
     metrics_path: /metrics
     static_configs:
-      - targets: ['produit-service:5002']  # Port exposé par produit-service pour les métriques
-
+      - targets: ['produit-service:5002']
   - job_name: 'ms-client'
     metrics_path: /metrics
     static_configs:
-      - targets: ['client-service:5001']  # Correction du nom et du port pour le service client
+      - targets: ['client-service:5001']
 
   - job_name: 'ms-commande'
     metrics_path: /metrics
     static_configs:
-      - targets: ['commande-service:5003']  # Correction du nom et du port pour le service commande
+      - targets: ['commande-service:5003']
