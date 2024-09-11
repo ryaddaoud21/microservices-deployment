@@ -46,6 +46,11 @@ services:
       - DB_NAME=client_db  # Base de données pour client-service
       - DB_USER=root
       - DB_PASSWORD=
+      - PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus  # Chemin pour les fichiers multiprocessus Prometheus
+
+    volumes:
+      - /tmp/prometheus:/tmp/prometheus
+
     #command: ["python", "-m", "API.client_api"]
     command: ["python", "-m", "client_api"]
 
