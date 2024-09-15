@@ -11,6 +11,7 @@ services:
       - client-service
       - produit-service
       - commande-service
+      - utilisateur-service
     networks:
       - microservice-network
 
@@ -23,6 +24,7 @@ services:
       - "9090:9090"
     networks:
       - microservice-network
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -37,14 +39,14 @@ services:
       - prometheus
 
   mysql:
-      image: chtaybo22/mysql-custom:latest
-      container_name: mysql-db
-      ports:
-        - "3307:3306"
-      environment:
-        MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
-      networks:
-        - microservice-network
+    image: chtaybo22/mysql-custom:latest
+    container_name: mysql-db
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: 'true'
+    networks:
+      - microservice-network
 
   rabbitmq:
     image: rabbitmq:management
@@ -54,6 +56,25 @@ services:
       - "15672:15672"
     networks:
       - microservice-network
+
+  utilisateur-service:
+    image: chtaybo22/ms-utilisateurs:latest  # Image du microservice utilisateurs
+    container_name: utilisateur-service
+    depends_on:
+      - rabbitmq
+      - mysql
+    networks:
+      - microservice-network
+    ports:
+      - "5004:5004"  # Port pour le service utilisateurs
+    environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
+      - DB_HOST=mysql-db
+      - DB_NAME=users_db  # Base de données pour le service utilisateurs
+      - DB_USER=root
+      - DB_PASSWORD=
+    command: ["python", "-m", "auth_api"]  # Commande pour exécuter le microservice utilisateurs
 
   client-service:
     image: chtaybo22/ms-client:latest
@@ -73,26 +94,20 @@ services:
       - DB_USER=root
       - DB_PASSWORD=
       - PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus  # Chemin pour les fichiers multiprocessus Prometheus
-
     volumes:
       - /tmp/prometheus:/tmp/prometheus
-
-    #command: ["python", "-m", "API.client_api"]
     command: ["python", "-m", "client_api"]
 
   produit-service:
     image: chtaybo22/ms-produit:latest
     container_name: produit-service
     depends_on:
-      - rabbitmq
       - mysql
     networks:
       - microservice-network
     ports:
       - "5002:5002"
     environment:
-      - RABBITMQ_HOST=rabbitmq
-      - RABBITMQ_PORT=5672
       - DB_HOST=mysql-db
       - DB_NAME=produit_db  # Base de données pour produit-service
       - DB_USER=root
@@ -117,10 +132,6 @@ services:
       - DB_USER=root
       - DB_PASSWORD=
     command: ["python", "-m", "commande_api"]
-
-
-
-
 
 networks:
   microservice-network:
