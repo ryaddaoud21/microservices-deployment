@@ -74,6 +74,9 @@ services:
       - DB_NAME=users_db  # Base de données pour le service utilisateurs
       - DB_USER=root
       - DB_PASSWORD=
+      - PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus  # Ajouter cette ligne
+    volumes:
+      - /tmp/prometheus:/tmp/prometheus  # Monter le répertoire pour Prometheus
     command: ["python", "-m", "auth_api"]  # Commande pour exécuter le microservice utilisateurs
 
   client-service:
@@ -103,15 +106,21 @@ services:
     container_name: produit-service
     depends_on:
       - mysql
+      - rabbitmq
     networks:
       - microservice-network
     ports:
       - "5002:5002"
     environment:
+      - RABBITMQ_HOST=rabbitmq
+      - RABBITMQ_PORT=5672
       - DB_HOST=mysql-db
       - DB_NAME=produit_db  # Base de données pour produit-service
       - DB_USER=root
       - DB_PASSWORD=
+      - PROMETHEUS_MULTIPROC_DIR=/tmp/prometheus  # Chemin pour les fichiers multiprocessus Prometheus
+    volumes:
+      - /tmp/prometheus:/tmp/prometheus
     command: ["python", "-m", "produit_api"]
 
   commande-service:
@@ -120,6 +129,7 @@ services:
     depends_on:
       - rabbitmq
       - mysql
+      - utilisateur-service
     networks:
       - microservice-network
     ports:
